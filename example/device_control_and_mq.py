@@ -9,8 +9,8 @@ from tuya_connector import (
 
 ACCESS_ID = "your-access-id"
 ACCESS_KEY = "your-access-key"
-API_ENDPOINT = "https://openapi.tuyacn.com"
-MQ_ENDPOINT = "wss://mqe.tuyacn.com:8285/"
+API_ENDPOINT = "https://openapi.tuyaus.com"
+MQ_ENDPOINT = "wss://mqe.tuyaus.com:8285/"
 
 # Enable debug log
 TUYA_LOGGER.setLevel(logging.DEBUG)

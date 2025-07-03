@@ -1,0 +1,6 @@
+ENDPOINT = "https://openapi.tuyaus.com"
+ACCESS_ID = "tu_access_id"
+ACCESS_KEY = "tu_access_key"
+USERNAME = "tu_usuario"
+PASSWORD = "tu_contraseña"
+DEVICE_ID = "tu_device_id"
