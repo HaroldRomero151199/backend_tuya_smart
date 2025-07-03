@@ -57,43 +57,47 @@ def get_color_hsv(color):
 
 @app.post("/webhook")
 async def webhook(request: Request):
-    body = await request.json()
-    intent = body['queryResult']['intent']['displayName']
-    parameters = body['queryResult'].get('parameters', {})
+    try:
+        body = await request.json()
+        intent = body['queryResult']['intent']['displayName']
+        parameters = body['queryResult'].get('parameters', {})
 
-    tuya = connect_to_tuya()
-    if not tuya:
-        return {"fulfillmentText": "No se pudo conectar con el dispositivo."}
+        tuya = connect_to_tuya()
+        if not tuya:
+            return {"fulfillmentText": "No se pudo conectar con el dispositivo."}
 
-    if intent == "EncenderFoco":
-        tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
-                  {'commands': [{'code': 'switch_1', 'value': True}]})
-        return {"fulfillmentText": "Foco encendido."}
-
-    elif intent == "ApagarFoco":
-        tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
-                  {'commands': [{'code': 'switch_1', 'value': False}]})
-        return {"fulfillmentText": "Foco apagado."}
-
-    elif intent == "CambiarColorFoco":
-        color = parameters.get("color")
-        if not color:
-            return {"fulfillmentText": "No entendí el color que deseas."}
-        color_data = get_color_hsv(color)
-        tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
-                  {'commands': [{'code': 'colour_data_v2', 'value': color_data}]})
-        return {"fulfillmentText": f"Color cambiado a {color}."}
-
-    elif intent == "IntensidadFoco":
-        intensidad = parameters.get("intensidad")
-        try:
-            intensidad = int(intensidad)
-            if not (10 <= intensidad <= 1000):
-                intensidad = max(10, min(intensidad, 1000))
+        if intent == "EncenderFoco":
             tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
-                      {'commands': [{'code': 'bright_value_v2', 'value': intensidad}]})
-            return {"fulfillmentText": f"Intensidad ajustada a {intensidad}."}
-        except:
-            return {"fulfillmentText": "No entendí la intensidad que deseas."}
+                    {'commands': [{'code': 'switch_1', 'value': True}]})
+            return {"fulfillmentText": "Foco encendido."}
 
-    return {"fulfillmentText": "No entendí el comando."}
+        elif intent == "ApagarFoco":
+            tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
+                    {'commands': [{'code': 'switch_1', 'value': False}]})
+            return {"fulfillmentText": "Foco apagado."}
+
+        elif intent == "CambiarColorFoco":
+            color = parameters.get("color")
+            if not color:
+                return {"fulfillmentText": "No entendí el color que deseas."}
+            color_data = get_color_hsv(color)
+            tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
+                    {'commands': [{'code': 'colour_data_v2', 'value': color_data}]})
+            return {"fulfillmentText": f"Color cambiado a {color}."}
+
+        elif intent == "IntensidadFoco":
+            intensidad = parameters.get("intensidad")
+            try:
+                intensidad = int(intensidad)
+                if not (10 <= intensidad <= 1000):
+                    intensidad = max(10, min(intensidad, 1000))
+                tuya.post(f'/v1.0/iot-03/devices/{DEVICE_ID}/commands',
+                        {'commands': [{'code': 'bright_value_v2', 'value': intensidad}]})
+                return {"fulfillmentText": f"Intensidad ajustada a {intensidad}."}
+            except:
+                return {"fulfillmentText": "No entendí la intensidad que deseas."}
+
+        return {"fulfillmentText": "No entendí el comando."}
+    except Exception as e:
+        print("Error general en webhook:", e)
+        return {"fulfillmentText": "Hubo un error interno."}
