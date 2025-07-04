@@ -12,7 +12,7 @@ def connect_to_tuya():
     """
     try:
         openapi = TuyaOpenAPI(ENDPOINT, ACCESS_ID, ACCESS_KEY)
-        openapi.login(USERNAME, PASSWORD)
+        # openapi.login(USERNAME, PASSWORD)
         return openapi
     except Exception as e:
         # Log the error if needed
